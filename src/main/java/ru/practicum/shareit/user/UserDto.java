@@ -4,18 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * TODO Sprint add-controllers.
- */
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+
 @Data
 @Builder
 @AllArgsConstructor
-public class User {
-
+public class UserDto {
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
+    @Email
     private String email;
 
-    public User() {
+    public UserDto() {
     }
 }
