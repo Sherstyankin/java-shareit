@@ -10,6 +10,4 @@ public interface ItemDao {
     List<Item> findByText(String text);
 
     Item create(Long userId, Item item);
-
-    Item update(Long userId, Item itemToUpdate, Long itemId);
 }

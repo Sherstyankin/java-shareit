@@ -3,8 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.UserNotOwnerException;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserDao;
 
 import java.util.Collections;
@@ -59,30 +60,32 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item update(Long userId, Item item, Long itemId) {
         checkUser(userId);
-        checkOwner(userId, itemId);
         Item itemToUpdate = itemDaoInMemory.findById(itemId);
+        checkOwner(userId, itemToUpdate.getOwner().getId());
         if (item.getName() != null) {
+            log.info("Редактируем название вещи.");
             itemToUpdate.setName(item.getName());
         }
         if (item.getDescription() != null) {
+            log.info("Редактируем описание вещи.");
             itemToUpdate.setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {
+            log.info("Изменяем доступность вещи.");
             itemToUpdate.setAvailable(item.getAvailable());
         }
-        log.info("Редактируем вещь.");
-        return itemDaoInMemory.update(userId, itemToUpdate, itemId);
+        return itemToUpdate;
     }
 
     private void checkUser(Long userId) {
         if (!userDaoInMemory.isUserExist(userId)) {
             log.warn("Пользователь c {} не существует!", userId);
-            throw new UserNotFoundException("Пользователь c ID:" + userId + " не существует!");
+            throw new EntityNotFoundException("Пользователь c ID:" + userId + " не существует!", User.class);
         }
     }
 
-    private void checkOwner(Long userId, Long itemId) {
-        if (!Objects.equals(userId, itemDaoInMemory.findById(itemId).getOwner().getId())) {
+    private void checkOwner(Long userId, Long ownerId) {
+        if (!Objects.equals(userId, ownerId)) {
             log.warn("Пользователь c ID={} не является владельцем вещи!", userId);
             throw new UserNotOwnerException("Пользователь c ID:" + userId + " не является владельцем вещи!");
         }

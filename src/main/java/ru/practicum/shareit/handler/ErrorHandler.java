@@ -15,49 +15,42 @@ public class ErrorHandler {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistException(final UserAlreadyExistException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+    public ErrorResponse handleUserAlreadyExistException(final EntityAlreadyExistException e) {
+        log.warn("Получен статус 409 Conflict: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleUserNotOwnerException(final UserNotOwnerException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+        log.warn("Получен статус 403 Forbidden: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+    public ErrorResponse handleItemNotFoundException(final EntityNotFoundException e) {
+        log.warn("Получен статус 404 Not found: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailAlreadyExistsException(final EmailAlreadyExistsException e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+        log.warn("Получен статус 409 Conflict: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
-        log.warn("Ошибка с сообщением: {}", e.getMessage());
+        log.warn("Получен статус 500 Internal server error: {}", e.getMessage(), e);
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 }

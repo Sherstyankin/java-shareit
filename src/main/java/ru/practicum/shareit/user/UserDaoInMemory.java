@@ -28,12 +28,6 @@ public class UserDaoInMemory implements UserDao {
     }
 
     @Override
-    public User update(User userToUpdate, Long userId) {
-        users.put(userId, userToUpdate);
-        return userToUpdate;
-    }
-
-    @Override
     public void delete(Long userId) {
         users.remove(userId);
     }

@@ -3,18 +3,16 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemDto {
-
     private Long id;
     @NotNull
     @NotBlank
@@ -23,7 +21,4 @@ public class ItemDto {
     private String description;
     @NotNull
     private Boolean available;
-
-    public ItemDto() {
-    }
 }

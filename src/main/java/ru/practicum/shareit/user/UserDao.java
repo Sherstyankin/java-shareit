@@ -9,8 +9,6 @@ public interface UserDao {
 
     User create(User user);
 
-    User update(User userToUpdate, Long userId);
-
     void delete(Long userId);
 
     boolean isUserExist(Long userId);
