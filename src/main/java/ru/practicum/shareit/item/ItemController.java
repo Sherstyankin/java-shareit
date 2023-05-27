@@ -5,7 +5,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,17 +13,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     @GetMapping
-    public List<ItemDto> findAllUserItems(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId) {
+    public List<ItemDto> findAllUserItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.findAllUserItems(userId).stream()
                 .map(item -> modelMapper.map(item, ItemDto.class))
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findById(@PathVariable @NotNull Long itemId) {
+    public ItemDto findById(@PathVariable Long itemId) {
         return modelMapper.map(itemService.findById(itemId), ItemDto.class);
     }
 
@@ -36,15 +35,15 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
                           @RequestBody @Valid ItemDto item) {
         return modelMapper.map(itemService.create(userId, modelMapper.map(item, Item.class)), ItemDto.class);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") @NotNull Long userId,
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
                           @RequestBody ItemDto item,
-                          @PathVariable @NotNull Long itemId) {
+                          @PathVariable Long itemId) {
         return modelMapper.map(itemService.update(userId, modelMapper.map(item, Item.class), itemId), ItemDto.class);
     }
 }

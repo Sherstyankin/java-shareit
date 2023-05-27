@@ -8,7 +8,8 @@ import ru.practicum.shareit.validation.Create;
 import ru.practicum.shareit.validation.Update;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
@@ -16,9 +17,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    @NotNull(groups = Create.class)
+    @NotBlank(groups = Create.class)
     private String name;
-    @NotNull(groups = Create.class)
+    @NotEmpty(groups = Create.class)
     @Email(groups = {Update.class, Create.class})
     private String email;
 }

@@ -8,19 +8,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Repository
+@Repository("ItemDaoInMemory")
 public class ItemDaoInMemory implements ItemDao {
     private final Map<Long, Item> rawItems = new HashMap<>();
-    private final Map<Long, Map<Long, Item>> items = new HashMap<>();
+    private final Map<Long, List<Item>> items = new HashMap<>();
+    private Long generatedId = 0L;
+
+    private Long getGeneratedId() {
+        return ++generatedId;
+    }
 
     @Override
     public List<Item> findAllUserItems(Long userId) {
-        return new ArrayList<>(items.getOrDefault(userId, null).values());
+        return items.get(userId);
     }
 
     @Override
     public Item findById(Long itemId) {
-        return rawItems.getOrDefault(itemId, null);
+        return rawItems.get(itemId);
     }
 
     @Override
@@ -35,9 +40,9 @@ public class ItemDaoInMemory implements ItemDao {
 
     @Override
     public Item create(Long userId, Item item) {
-        Map<Long, Item> temp = items.getOrDefault(userId, new HashMap<>());
-        temp.put(item.getId(), item);
-        items.put(userId, temp);
+        item.setId(getGeneratedId());
+        final List<Item> itemsList = items.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
+        itemsList.add(item);
         rawItems.put(item.getId(), item);
         return item;
     }

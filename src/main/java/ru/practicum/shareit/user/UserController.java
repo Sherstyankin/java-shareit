@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.validation.Create;
 import ru.practicum.shareit.validation.Update;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final ModelMapper modelMapper = new ModelMapper();
+    private final ModelMapper modelMapper;
 
     @GetMapping
     public List<UserDto> findAll() {
@@ -27,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserDto findById(@PathVariable @NotNull Long userId) {
+    public UserDto findById(@PathVariable Long userId) {
         return modelMapper.map(userService.findById(userId), UserDto.class);
     }
 
@@ -38,12 +37,12 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto update(@RequestBody @Validated(Update.class) UserDto user,
-                          @PathVariable @NotNull Long userId) {
+                          @PathVariable Long userId) {
         return modelMapper.map(userService.update(modelMapper.map(user, User.class), userId), UserDto.class);
     }
 
     @DeleteMapping("/{userId}")
-    public void delete(@PathVariable @NotNull Long userId) {
+    public void delete(@PathVariable Long userId) {
         userService.delete(userId);
     }
 }

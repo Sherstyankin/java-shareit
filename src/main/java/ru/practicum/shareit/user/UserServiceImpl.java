@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailAlreadyExistsException;
-import ru.practicum.shareit.exception.EntityAlreadyExistException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 
 import java.util.List;
@@ -16,43 +15,36 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDaoInMemory;
-    private Long generatedId = 0L;
-
-    private Long getGeneratedId() {
-        return ++generatedId;
-    }
+    private final UserDao userDao;
 
     @Override
     public List<User> findAll() {
         log.info("Получаем список всех пользователей.");
-        return userDaoInMemory.findAll();
+        return userDao.findAll();
     }
 
     @Override
     public User create(User user) {
         checkEmail(user.getEmail());
-        user.setId(getGeneratedId());
-        if (userDaoInMemory.isUserExist(user.getId())) {
-            throw new EntityAlreadyExistException("Пользователь c " + user.getId() +
-                    " уже существует!", User.class);
-        }
         log.info("Добавляем следующего пользователя: {}", user);
-        return userDaoInMemory.create(user);
+        return userDao.create(user);
     }
 
     @Override
     public User update(User user, Long userId) {
-        if (!userDaoInMemory.isUserExist(userId)) {
+        if (!userDao.isUserExist(userId)) {
             log.warn("Пользователь c {} не существует!", userId);
             throw new EntityNotFoundException("Пользователь c ID:" + userId + " не существует!", User.class);
         }
-        User userToUpdate = userDaoInMemory.findById(userId);
-        if (user.getEmail() != null && !Objects.equals(user.getEmail(), userToUpdate.getEmail())) {
+        User userToUpdate = userDao.findById(userId);
+        if (user.getEmail() != null
+                && !user.getEmail().isEmpty()
+                && !Objects.equals(user.getEmail(), userToUpdate.getEmail())) {
             checkEmail(user.getEmail());
             userToUpdate.setEmail(user.getEmail());
         }
-        if (user.getName() != null) {
+        if (user.getName() != null
+                && !user.getName().isEmpty()) {
             userToUpdate.setName(user.getName());
         }
         log.info("Обновляем следующего пользователя: {}", userToUpdate);
@@ -61,26 +53,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findById(Long userId) {
-        if (!userDaoInMemory.isUserExist(userId)) {
+        if (!userDao.isUserExist(userId)) {
             log.warn("Пользователь c ID:{} не существует!", userId);
             throw new EntityNotFoundException("Пользователь c ID:" + userId + " не существует!", User.class);
         }
         log.info("Получаем пользователя с ID:{}", userId);
-        return userDaoInMemory.findById(userId);
+        return userDao.findById(userId);
     }
 
     @Override
     public void delete(Long userId) {
-        if (!userDaoInMemory.isUserExist(userId)) {
+        if (!userDao.isUserExist(userId)) {
             log.warn("Пользователь c ID:{} не существует!", userId);
             throw new EntityNotFoundException("Пользователь c ID:" + userId + " не существует!", User.class);
         }
         log.info("Удаляем пользователя под ID: {}", userId);
-        userDaoInMemory.delete(userId);
+        userDao.delete(userId);
     }
 
     private void checkEmail(String email) {
-        List<String> emailList = userDaoInMemory.findAll().stream()
+        List<String> emailList = userDao.findAll().stream()
                 .map(User::getEmail)
                 .collect(Collectors.toList());
         if (emailList.contains(email)) {

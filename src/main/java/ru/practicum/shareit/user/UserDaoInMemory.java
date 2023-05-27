@@ -7,9 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+@Repository("UserDaoInMemory")
 public class UserDaoInMemory implements UserDao {
     private final Map<Long, User> users = new HashMap<>();
+    private Long generatedId = 0L;
+
+    private Long getGeneratedId() {
+        return ++generatedId;
+    }
 
     @Override
     public List<User> findAll() {
@@ -23,6 +28,7 @@ public class UserDaoInMemory implements UserDao {
 
     @Override
     public User create(User user) {
+        user.setId(getGeneratedId());
         users.put(user.getId(), user);
         return user;
     }
