@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user;
 
 import java.util.List;
-
+@Deprecated(since = "Приложение теперь работает с базой данных.")
 public interface UserDao {
     List<User> findAll();
 

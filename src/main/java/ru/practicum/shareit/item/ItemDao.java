@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import java.util.List;
-
+@Deprecated(since = "Приложение теперь работает с базой данных.")
 public interface ItemDao {
     List<Item> findAllUserItems(Long userId);
 

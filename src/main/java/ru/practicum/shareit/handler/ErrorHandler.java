@@ -1,6 +1,7 @@
 package ru.practicum.shareit.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +13,7 @@ import ru.practicum.shareit.exception.*;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
@@ -27,9 +28,9 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleUserNotOwnerException(final UserNotOwnerException e) {
-        log.warn("Получен статус 403 Forbidden: {}", e.getMessage(), e);
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotOwnerException(final UserNotOwnerOrBookerException e) {
+        log.warn("Получен статус 404 Not found: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
@@ -41,9 +42,30 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailAlreadyExistsException(final EmailAlreadyExistsException e) {
-        log.warn("Получен статус 409 Conflict: {}", e.getMessage(), e);
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemNotAvailableException(final ItemNotAvailableException e) {
+        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleReceivedStatusAlreadyExistsException(final ReceivedStatusAlreadyExistsException e) {
+        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleInvalidDateTimeException(final InvalidDateTimeException e) {
+        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUserNotBookerOrBookingNotFinished(final UserNotBookerOrBookingNotFinished e) {
+        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 

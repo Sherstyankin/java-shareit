@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Deprecated(since = "Приложение теперь работает с базой данных.")
 @Repository("ItemDaoInMemory")
 public class ItemDaoInMemory implements ItemDao {
     private final Map<Long, Item> rawItems = new HashMap<>();

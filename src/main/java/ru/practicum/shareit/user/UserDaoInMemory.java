@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Deprecated(since = "Приложение теперь работает с базой данных.")
 @Repository("UserDaoInMemory")
 public class UserDaoInMemory implements UserDao {
     private final Map<Long, User> users = new HashMap<>();
