@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.dto.ResponseItemDto;
 import java.util.List;
 
 public interface ItemService {
-    List<ResponseItemDto> findAllUserItems(Long userId);
+    List<ResponseItemDto> findAllOwnerItems(Long userId);
 
     ResponseItemDto findById(Long userId, Long itemId);
 

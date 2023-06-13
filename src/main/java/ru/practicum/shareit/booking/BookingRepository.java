@@ -1,112 +1,113 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.entity.Booking;
 
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = ?1 " +
-            "order by b.start desc")
-    List<Booking> findAllBookingByUserId(Long userId);
+    List<Booking> findByBookerIdOrderByStartDesc(Long userId);
 
     @Query("select b " +
             "from Booking b " +
             "join b.booker br " +
-            "where br.id = ?1 and (CURRENT_TIMESTAMP between b.start and b.end) " +
-            "order by b.start desc")
-    List<Booking> findCurrentBookingByUserId(Long userId);
+            "where br.id = :userId and (CURRENT_TIMESTAMP between b.start and b.end)")
+    List<Booking> findCurrentBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.booker br " +
-            "where br.id = ?1 and CURRENT_TIMESTAMP > b.end " +
-            "order by b.start desc")
-    List<Booking> findPastBookingByUserId(Long userId);
+            "where br.id = :userId and CURRENT_TIMESTAMP > b.end")
+    List<Booking> findPastBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.booker br " +
-            "where br.id = ?1 and CURRENT_TIMESTAMP < b.start " +
-            "order by b.start desc")
-    List<Booking> findFutureBookingByUserId(Long userId);
+            "where br.id = :userId and CURRENT_TIMESTAMP < b.start")
+    List<Booking> findFutureBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.booker br " +
-            "where br.id = ?1 and b.status = 'WAITING' " +
-            "order by b.start desc")
-    List<Booking> findWaitingBookingByUserId(Long userId);
+            "where br.id = :userId and b.status = 'WAITING'")
+    List<Booking> findWaitingBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.booker br " +
-            "where br.id = ?1 and b.status = 'REJECTED' " +
-            "order by b.start desc")
-    List<Booking> findRejectedBookingByUserId(Long userId);
+            "where br.id = :userId and b.status = 'REJECTED'")
+    List<Booking> findRejectedBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 " +
-            "order by b.start desc")
-    List<Booking> findAllBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId")
+    List<Booking> findAllBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 and (CURRENT_TIMESTAMP between b.start and b.end) " +
-            "order by b.start desc")
-    List<Booking> findCurrentBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId and (CURRENT_TIMESTAMP between b.start and b.end)")
+    List<Booking> findCurrentBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 and CURRENT_TIMESTAMP > b.end " +
-            "order by b.start desc")
-    List<Booking> findPastBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId and CURRENT_TIMESTAMP > b.end")
+    List<Booking> findPastBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 and CURRENT_TIMESTAMP < b.start " +
-            "order by b.start desc")
-    List<Booking> findFutureBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId and CURRENT_TIMESTAMP < b.start")
+    List<Booking> findFutureBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 and b.status = 'WAITING' " +
-            "order by b.start desc")
-    List<Booking> findWaitingBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId and b.status = 'WAITING'")
+    List<Booking> findWaitingBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
             "join b.item i " +
-            "where i.owner.id = ?1 and b.status = 'REJECTED' " +
-            "order by b.start desc")
-    List<Booking> findRejectedBookingByOwnerItems(Long userId);
+            "where i.owner.id = :userId and b.status = 'REJECTED'")
+    List<Booking> findRejectedBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 and b.start < CURRENT_TIMESTAMP " +
+            "where b.item.id = :itemId and b.start < CURRENT_TIMESTAMP " +
             "order by b.end desc")
-    List<Booking> findLastBookingForItem(Long itemId);
+    List<Booking> findLastBookingForItem(@Param("itemId") Long itemId);
 
     @Query("select b " +
             "from Booking b " +
-            "where b.item.id = ?1 and b.start > CURRENT_TIMESTAMP " +
+            "where b.item.id = :itemId and b.start > CURRENT_TIMESTAMP " +
             "order by b.end asc")
-    List<Booking> findNextBookingForItem(Long itemId);
+    List<Booking> findNextBookingForItem(@Param("itemId") Long itemId);
+
+    @Query("select b " +
+            "from Booking b " +
+            "join b.item i " +
+            "where i.owner.id = :userId and b.start < CURRENT_TIMESTAMP " +
+            "order by b.end desc")
+    List<Booking> findLastBookingForAllOwnerItems(@Param("userId") Long userId);
+
+    @Query("select b " +
+            "from Booking b " +
+            "join b.item i " +
+            "where i.owner.id = :userId and b.start > CURRENT_TIMESTAMP " +
+            "order by b.end asc")
+    List<Booking> findNextBookingForAllOwnerItems(@Param("userId") Long userId);
 
     @Query(value = "select case when exists (select * " +
             "from bookings as b " +
-            "where b.user_id = ?1 and b.item_id = ?2 and CURRENT_TIMESTAMP > b.end_time) " +
+            "where b.user_id = :userId and b.item_id = :itemId and CURRENT_TIMESTAMP > b.end_time) " +
             "then cast(1 as bit) " +
             "else cast(0 as bit) end", nativeQuery = true)
-    Boolean checkIsBookerAndFinished(Long userId, Long itemId);
+    Boolean checkIsBookerAndFinished(@Param("userId") Long userId,
+                                     @Param("itemId") Long itemId);
 }

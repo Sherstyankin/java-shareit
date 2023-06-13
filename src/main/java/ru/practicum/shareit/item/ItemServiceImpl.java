@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -19,10 +20,13 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Service
 @RequiredArgsConstructor
@@ -38,31 +42,41 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    public List<ResponseItemDto> findAllUserItems(Long userId) {
-        List<Item> items = itemRepository.findAllByUserId(userId);
+    public List<ResponseItemDto> findAllOwnerItems(Long userId) {
+        List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId);
         if (!items.isEmpty()) {
             checkOwner(userId, items.get(0).getOwner().getId());
         } else {
             return Collections.emptyList();
         }
+        // достаем все комментарии и распределяем по группам(вещам)
+        Map<Item, List<Comment>> comments = commentRepository
+                .findByItemIn(items, Sort.by(DESC, "created")).stream()
+                .collect(groupingBy(Comment::getItem));
+        // достаем все следующие бронирования и распределяем по группам(вещам)
+        Map<Item, List<Booking>> next = bookingRepository.findNextBookingForAllOwnerItems(userId).stream()
+                .collect(groupingBy(Booking::getItem));
+        // достаем все предыдущие бронирования и распределяем по группам(вещам)
+        Map<Item, List<Booking>> last = bookingRepository.findLastBookingForAllOwnerItems(userId).stream()
+                .collect(groupingBy(Booking::getItem));
+        // собираем список из dto-объектов
         List<ResponseItemDto> output = items.stream()
                 .map(item -> {
-                    Long itemId = item.getId();
-                    List<Comment> comments = commentRepository.findAllByItemId(itemId);
-                    List<ResponseCommentDto> commentDtos = CommentMapper
-                            .mapToResponseCommentDto(comments);
-                    List<Booking> next = bookingRepository.findNextBookingForItem(itemId);
-                    List<Booking> last = bookingRepository.findLastBookingForItem(itemId);
+                    List<Booking> nextBookingList = next.getOrDefault(item, Collections.emptyList());
+                    List<Booking> lastBookingList = last.getOrDefault(item, Collections.emptyList());
                     BookingForItemDto lastBookingDto = BookingMapper
-                            .mapToBookingForItemDto(last.isEmpty() ? null : last.get(0));
+                            .mapToBookingForItemDto(lastBookingList.stream()
+                                    .findFirst().orElse(null));
                     BookingForItemDto nextBookingDto = BookingMapper
-                            .mapToBookingForItemDto(next.isEmpty() || last.isEmpty() ? null : next.get(0));
+                            .mapToBookingForItemDto(nextBookingList.isEmpty() ||
+                                    lastBookingList.isEmpty() ? null : next.get(item).get(0));
+                    List<ResponseCommentDto> commentDtos = CommentMapper
+                            .mapToResponseCommentDto(comments.getOrDefault(item, Collections.emptyList()));
                     return ItemMapper.mapToResponseItemDto(item,
                             lastBookingDto,
                             nextBookingDto,
                             commentDtos);
                 })
-                .sorted(Comparator.comparingLong(ResponseItemDto::getId))
                 .collect(Collectors.toList());
         log.info("Получаем все вещи пользователя с ID:{}", userId);
         return output;
@@ -72,14 +86,14 @@ public class ItemServiceImpl implements ItemService {
     public ResponseItemDto findById(Long userId, Long itemId) {
         Item item = findItem(itemId);
         log.info("Получаем вещь с ID:{}", itemId);
-        List<Comment> comments = commentRepository.findAllByItemId(itemId);
+        List<Comment> comments = commentRepository.findByItemId(itemId);
         List<ResponseCommentDto> commentDtos = CommentMapper
                 .mapToResponseCommentDto(comments);
         if (Objects.equals(userId, item.getOwner().getId())) {
             List<Booking> next = bookingRepository.findNextBookingForItem(itemId);
             List<Booking> last = bookingRepository.findLastBookingForItem(itemId);
             BookingForItemDto lastBookingDto = BookingMapper
-                    .mapToBookingForItemDto(last.isEmpty() ? null : last.get(0));
+                    .mapToBookingForItemDto(last.stream().findFirst().orElse(null));
             BookingForItemDto nextBookingDto = BookingMapper
                     .mapToBookingForItemDto(next.isEmpty() || last.isEmpty() ? null : next.get(0));
             return ItemMapper.mapToResponseItemDto(item, lastBookingDto, nextBookingDto, commentDtos);

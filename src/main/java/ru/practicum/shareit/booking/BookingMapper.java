@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import lombok.experimental.UtilityClass;
 import org.modelmapper.ModelMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
@@ -13,13 +14,11 @@ import ru.practicum.shareit.user.UserDto;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class BookingMapper {
-    private BookingMapper() {
-    }
+@UtilityClass
+public class BookingMapper {
+    private final ModelMapper modelMapper = new ModelMapper();
 
-    private static final ModelMapper modelMapper = new ModelMapper();
-
-    public static Booking mapToBooking(BookingDto bookingDto, Item item, User user) {
+    public Booking mapToBooking(BookingDto bookingDto, Item item, User user) {
         return Booking.builder()
                 .end(bookingDto.getEnd())
                 .start(bookingDto.getStart())
@@ -28,7 +27,7 @@ public final class BookingMapper {
                 .build();
     }
 
-    public static ResponseBookingDto mapToResponseBookingDto(Booking booking) {
+    public ResponseBookingDto mapToResponseBookingDto(Booking booking) {
         return booking == null ? null : ResponseBookingDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -39,7 +38,7 @@ public final class BookingMapper {
                 .build();
     }
 
-    public static BookingForItemDto mapToBookingForItemDto(Booking booking) {
+    public BookingForItemDto mapToBookingForItemDto(Booking booking) {
         return booking == null ? null : BookingForItemDto.builder()
                 .id(booking.getId())
                 .start(booking.getStart())
@@ -48,7 +47,7 @@ public final class BookingMapper {
                 .build();
     }
 
-    public static List<ResponseBookingDto> mapToResponseBookingDto(Iterable<Booking> bookings) {
+    public List<ResponseBookingDto> mapToResponseBookingDto(Iterable<Booking> bookings) {
         List<ResponseBookingDto> dtos = new ArrayList<>();
         for (Booking booking : bookings) {
             dtos.add(mapToResponseBookingDto(booking));
