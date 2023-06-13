@@ -68,8 +68,8 @@ public class ItemServiceImpl implements ItemService {
                             .mapToBookingForItemDto(lastBookingList.stream()
                                     .findFirst().orElse(null));
                     BookingForItemDto nextBookingDto = BookingMapper
-                            .mapToBookingForItemDto(nextBookingList.isEmpty() ||
-                                    lastBookingList.isEmpty() ? null : next.get(item).get(0));
+                            .mapToBookingForItemDto(lastBookingList.isEmpty() ? null : nextBookingList.stream()
+                                    .findFirst().orElse(null));
                     List<ResponseCommentDto> commentDtos = CommentMapper
                             .mapToResponseCommentDto(comments.getOrDefault(item, Collections.emptyList()));
                     return ItemMapper.mapToResponseItemDto(item,
@@ -95,7 +95,8 @@ public class ItemServiceImpl implements ItemService {
             BookingForItemDto lastBookingDto = BookingMapper
                     .mapToBookingForItemDto(last.stream().findFirst().orElse(null));
             BookingForItemDto nextBookingDto = BookingMapper
-                    .mapToBookingForItemDto(next.isEmpty() || last.isEmpty() ? null : next.get(0));
+                    .mapToBookingForItemDto(last.isEmpty() ? null : next.stream()
+                            .findFirst().orElse(null));
             return ItemMapper.mapToResponseItemDto(item, lastBookingDto, nextBookingDto, commentDtos);
         } else {
             return ItemMapper.mapToResponseItemDto(item, null, null, commentDtos);

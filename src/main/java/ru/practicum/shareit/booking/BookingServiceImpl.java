@@ -31,6 +31,8 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
+    private static final Sort sort = Sort.by(DESC, "start");
+
     @Override
     public ResponseBookingDto create(Long userId, BookingDto bookingDto) {
         User booker = findUser(userId);
@@ -45,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
     public ResponseBookingDto changeStatus(Long userId, Long bookingId, Boolean approved) {
         Booking booking = findBooking(bookingId);
         checkIsApproverIsOwner(userId, booking.getItem().getOwner().getId()); // проверить, что пользователь - владелец вещи
-        if ((approved && booking.getStatus() == BookingStatus.APPROVED)) { // проверить, что изменение не повторное
+        if (booking.getStatus() != BookingStatus.WAITING) { // проверить, что изменение не повторное
             throw new ReceivedStatusAlreadyExistsException("Переданный статус уже установлен.");
         } else if (approved) {
             booking.setStatus(BookingStatus.APPROVED);
@@ -70,24 +72,19 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingByUserId(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findCurrentBookingByUserId(userId, sort);
                 break;
             case PAST:
-                bookingList = bookingRepository.findPastBookingByUserId(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findPastBookingByUserId(userId, sort);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findFutureBookingByUserId(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findFutureBookingByUserId(userId, sort);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findWaitingBookingByUserId(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findWaitingBookingByUserId(userId, sort);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingByUserId(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findRejectedBookingByUserId(userId, sort);
                 break;
             default:
                 bookingList = bookingRepository.findByBookerIdOrderByStartDesc(userId);
@@ -103,28 +100,22 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId, sort);
                 break;
             case PAST:
-                bookingList = bookingRepository.findPastBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findPastBookingByOwnerItems(userId, sort);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findFutureBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findFutureBookingByOwnerItems(userId, sort);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findWaitingBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findWaitingBookingByOwnerItems(userId, sort);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findRejectedBookingByOwnerItems(userId, sort);
                 break;
             default:
-                bookingList = bookingRepository.findAllBookingByOwnerItems(userId,
-                        Sort.by(DESC, "start"));
+                bookingList = bookingRepository.findAllBookingByOwnerItems(userId, sort);
                 break;
         }
         return bookingList != null ?
