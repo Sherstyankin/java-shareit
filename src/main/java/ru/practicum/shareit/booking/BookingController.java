@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
@@ -11,11 +12,13 @@ import ru.practicum.shareit.handler.ErrorResponse;
 import ru.practicum.shareit.validation.ValidationService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 public class BookingController {
 
@@ -52,21 +55,27 @@ public class BookingController {
     @GetMapping
     public List<ResponseBookingDto> findAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                            @RequestParam(defaultValue = "ALL")
-                                                           BookingState state) {
+                                                           BookingState state,
+                                                           @RequestParam(required = false) @Min(0) Integer from,
+                                                           @RequestParam(required = false) @Min(1) Integer size) {
         log.info("Получен запрос на поиск бронирований пользователя с ID:{} по категории {}",
                 userId,
                 state);
-        return bookingService.findAllBookingByUserId(userId, state);
+        return bookingService.findAllBookingByUserId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<ResponseBookingDto> findAllBookingByOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                                @RequestParam(defaultValue = "ALL")
-                                                               BookingState state) {
+                                                               BookingState state,
+                                                               @RequestParam(required = false) @Min(0)
+                                                                   Integer from,
+                                                               @RequestParam(required = false) @Min(1)
+                                                                   Integer size) {
         log.info("Получен запрос на поиск бронирований всех вещей владельца с ID:{} по категории {}",
                 userId,
                 state);
-        return bookingService.findAllBookingByOwnerItems(userId, state);
+        return bookingService.findAllBookingByOwnerItems(userId, state, from, size);
     }
 
     @ExceptionHandler(ConversionFailedException.class)

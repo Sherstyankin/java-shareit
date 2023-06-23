@@ -4,16 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingForItemDto;
-import ru.practicum.shareit.item.comment.ResponseCommentDto;
-
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseItemDto {
+public class ItemForItemRequestDto {
 
     private Long id;
 
@@ -22,12 +18,6 @@ public class ResponseItemDto {
     private String description;
 
     private Boolean available;
-
-    private BookingForItemDto lastBooking;
-
-    private BookingForItemDto nextBooking;
-
-    private List<ResponseCommentDto> comments;
 
     private Long requestId;
 }

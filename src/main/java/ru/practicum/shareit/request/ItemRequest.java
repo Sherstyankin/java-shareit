@@ -1,7 +1,31 @@
 package ru.practicum.shareit.request;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.User;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity(name = "requests")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ItemRequest {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "requestor_id")
+    private User requestor;
+
+    @Builder.Default
+    private LocalDateTime created = LocalDateTime.now();
 }

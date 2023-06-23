@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -67,8 +69,34 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ResponseBookingDto> findAllBookingByUserId(Long userId, BookingState state) {
+    public List<ResponseBookingDto> findAllBookingByUserId(Long userId, BookingState state, Integer from,
+                                                           Integer size) {
         checkIsUserExists(userId); // проверить существует ли пользователь
+        List<Booking> bookingList;
+        if (from == null || size == null) {
+            bookingList = findAllBookingByUserIdWithoutPagination(userId, state);
+        } else {
+            bookingList = findAllBookingByUserIdWithPagination(userId, state, from, size);
+        }
+        return bookingList != null ?
+                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+    }
+
+    @Override
+    public List<ResponseBookingDto> findAllBookingByOwnerItems(Long userId, BookingState state, Integer from,
+                                                               Integer size) {
+        checkIsUserExists(userId); // проверить существует ли пользователь
+        List<Booking> bookingList;
+        if (from == null || size == null) {
+            bookingList = findAllBookingByOwnerItemsWithoutPagination(userId, state);
+        } else {
+            bookingList = findAllBookingByOwnerItemsWithPagination(userId, state, from, size);
+        }
+        return bookingList != null ?
+                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+    }
+
+    private List<Booking> findAllBookingByUserIdWithoutPagination(Long userId, BookingState state) {
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
@@ -87,16 +115,40 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findRejectedBookingByUserId(userId, sort);
                 break;
             default:
-                bookingList = bookingRepository.findByBookerIdOrderByStartDesc(userId);
+                bookingList = bookingRepository.findByBookerId(userId, sort);
                 break;
         }
-        return bookingList != null ?
-                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+        return bookingList;
     }
 
-    @Override
-    public List<ResponseBookingDto> findAllBookingByOwnerItems(Long userId, BookingState state) {
-        checkIsUserExists(userId); // проверить существует ли пользователь
+    private List<Booking> findAllBookingByUserIdWithPagination(Long userId, BookingState state, Integer from,
+                                                 Integer size) {
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, sort);
+        List<Booking> bookingList;
+        switch (state) {
+            case CURRENT:
+                bookingList = bookingRepository.findCurrentBookingByUserId(userId, pageable);
+                break;
+            case PAST:
+                bookingList = bookingRepository.findPastBookingByUserId(userId, pageable);
+                break;
+            case FUTURE:
+                bookingList = bookingRepository.findFutureBookingByUserId(userId, pageable);
+                break;
+            case WAITING:
+                bookingList = bookingRepository.findWaitingBookingByUserId(userId, pageable);
+                break;
+            case REJECTED:
+                bookingList = bookingRepository.findRejectedBookingByUserId(userId, pageable);
+                break;
+            default:
+                bookingList = bookingRepository.findByBookerId(userId, pageable);
+                break;
+        }
+        return bookingList;
+    }
+
+    private List<Booking> findAllBookingByOwnerItemsWithoutPagination(Long userId, BookingState state) {
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
@@ -118,8 +170,35 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findAllBookingByOwnerItems(userId, sort);
                 break;
         }
-        return bookingList != null ?
-                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+        return bookingList;
+    }
+
+    private List<Booking> findAllBookingByOwnerItemsWithPagination(Long userId, BookingState state,
+                                                                   Integer from,
+                                                                   Integer size) {
+        List<Booking> bookingList;
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, sort);
+        switch (state) {
+            case CURRENT:
+                bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId, pageable);
+                break;
+            case PAST:
+                bookingList = bookingRepository.findPastBookingByOwnerItems(userId, pageable);
+                break;
+            case FUTURE:
+                bookingList = bookingRepository.findFutureBookingByOwnerItems(userId, pageable);
+                break;
+            case WAITING:
+                bookingList = bookingRepository.findWaitingBookingByOwnerItems(userId, pageable);
+                break;
+            case REJECTED:
+                bookingList = bookingRepository.findRejectedBookingByOwnerItems(userId, pageable);
+                break;
+            default:
+                bookingList = bookingRepository.findAllBookingByOwnerItems(userId, pageable);
+                break;
+        }
+        return bookingList;
     }
 
     private void checkIsOwnerOrBooker(Long userId, Long ownerId, Long bookerId) {
