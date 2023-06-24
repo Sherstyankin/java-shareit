@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,17 +54,12 @@ class ItemRepositoryTest {
                 .build();
 
         itemRepository.save(item);
-
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
     @Test
     void findByOwnerIdOrderByIdAsc_whenInvoked_then_ResponseContainsListWithItem() {
         Pageable pageable = PageRequest.of(0, 5);
-        List<Item> itemList = itemRepository.findByOwnerIdOrderByIdAsc(1L, pageable);
+        List<Item> itemList = itemRepository.findByOwnerIdOrderByIdAsc(owner.getId(), pageable);
 
         assertEquals(1, itemList.size());
         assertEquals("Походный рюкзак", itemList.get(0).getDescription());
