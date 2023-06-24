@@ -12,7 +12,7 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.entity.Booking;
 import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.exception.UserNotBookerOrBookingNotFinished;
+import ru.practicum.shareit.exception.UserNotBookerOrBookingNotFinishedException;
 import ru.practicum.shareit.exception.UserNotOwnerOrBookerException;
 import ru.practicum.shareit.item.comment.*;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -50,13 +50,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ResponseItemDto> findAllOwnerItems(Long userId, Integer from, Integer size) {
-        List<Item> items;
-        if (from == null || size == null) {
-            items = itemRepository.findByOwnerIdOrderByIdAsc(userId);
-        } else {
-            Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
-            items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
-        }
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
         if (!items.isEmpty()) {
             checkOwner(userId, items.get(0).getOwner().getId());
         } else {
@@ -123,13 +118,8 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         log.info("Возвращаем список вещей, который соответствует тексту запроса: '{}'", text);
-        List<Item> items;
-        if (from == null || size == null) {
-            items = itemRepository.findByText(text);
-        } else {
-            Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
-            items = itemRepository.findByText(text, pageable);
-        }
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<Item> items = itemRepository.findByText(text, pageable);
         return items.stream()
                 .map(item -> modelMapper.map(item, ItemDto.class))
                 .collect(Collectors.toList());
@@ -177,7 +167,7 @@ public class ItemServiceImpl implements ItemService {
             comment.setAuthor(author);
             return CommentMapper.mapToResponseCommentDto(commentRepository.save(comment));
         } else {
-            throw new UserNotBookerOrBookingNotFinished("Пользователь с ID:" + userId +
+            throw new UserNotBookerOrBookingNotFinishedException("Пользователь с ID:" + userId +
                     " еще не брал вещь в аренду или аренда не завершена.");
         }
     }

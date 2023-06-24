@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
-import ru.practicum.shareit.handler.ErrorResponse;
+import ru.practicum.shareit.handler.ErrorHandler;
 import ru.practicum.shareit.validation.ValidationService;
 
 import javax.validation.Valid;
@@ -56,8 +56,8 @@ public class BookingController {
     public List<ResponseBookingDto> findAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                            @RequestParam(defaultValue = "ALL")
                                                            BookingState state,
-                                                           @RequestParam(required = false) @Min(0) Integer from,
-                                                           @RequestParam(required = false) @Min(1) Integer size) {
+                                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск бронирований пользователя с ID:{} по категории {}",
                 userId,
                 state);
@@ -68,10 +68,8 @@ public class BookingController {
     public List<ResponseBookingDto> findAllBookingByOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                                @RequestParam(defaultValue = "ALL")
                                                                BookingState state,
-                                                               @RequestParam(required = false) @Min(0)
-                                                                   Integer from,
-                                                               @RequestParam(required = false) @Min(1)
-                                                                   Integer size) {
+                                                               @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                               @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск бронирований всех вещей владельца с ID:{} по категории {}",
                 userId,
                 state);
@@ -80,7 +78,7 @@ public class BookingController {
 
     @ExceptionHandler(ConversionFailedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleConversionFailedException(final ConversionFailedException e) {
-        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
+    public ErrorHandler.ErrorResponse handleConversionFailedException(final ConversionFailedException e) {
+        return new ErrorHandler.ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
     }
 }

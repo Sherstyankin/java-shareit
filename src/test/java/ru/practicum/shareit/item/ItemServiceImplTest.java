@@ -6,21 +6,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
 import ru.practicum.shareit.booking.entity.Booking;
+import ru.practicum.shareit.exception.UserNotBookerOrBookingNotFinishedException;
 import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.comment.RequestCommentDto;
 import ru.practicum.shareit.item.comment.ResponseCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -30,10 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 class ItemServiceImplTest {
@@ -133,15 +129,11 @@ class ItemServiceImplTest {
     void findAllOwnerItems() {
         Mockito
                 .when(mockItemRepository
-                        .findByOwnerIdOrderByIdAsc(1L))
-                .thenReturn(List.of(item));
-        Mockito
-                .when(mockItemRepository
                         .findByOwnerIdOrderByIdAsc(anyLong(), any(Pageable.class)))
                 .thenReturn(List.of(item));
         Mockito
                 .when(mockCommentRepository.findByItemIn(List.of(item), Sort.by(DESC, "created")))
-                        .thenReturn(List.of(comment));
+                .thenReturn(List.of(comment));
         Mockito
                 .when(mockBookingRepository.findNextBookingForAllOwnerItems(1L))
                 .thenReturn(List.of(booking));
@@ -149,7 +141,7 @@ class ItemServiceImplTest {
                 .when(mockBookingRepository.findLastBookingForAllOwnerItems(1L))
                 .thenReturn(List.of(booking));
 
-        List<ResponseItemDto> result = itemService.findAllOwnerItems(1L, null, null);
+        List<ResponseItemDto> result = itemService.findAllOwnerItems(1L, 0, 10);
         Assertions.assertEquals(List.of(responseItemDto), result);
     }
 
@@ -180,20 +172,20 @@ class ItemServiceImplTest {
     @Test
     void findByTextWithCorrectMatch() {
         Mockito
-                .when(mockItemRepository.findByText("РюК"))
+                .when(mockItemRepository.findByText(anyString(), any(Pageable.class)))
                 .thenReturn(List.of(item));
 
-        List<ItemDto> result = itemService.findByText("РюК", null, null);
+        List<ItemDto> result = itemService.findByText("РюК", 0, 10);
         Assertions.assertEquals(List.of(itemDto), result);
     }
 
     @Test
     void findByTextWithBlankInput() {
         Mockito
-                .when(mockItemRepository.findByText(" "))
+                .when(mockItemRepository.findByText(" ", PageRequest.of(0, 10)))
                 .thenReturn(Collections.emptyList());
 
-        List<ItemDto> result = itemService.findByText(" ", null, null);
+        List<ItemDto> result = itemService.findByText(" ", 0, 10);
         Assertions.assertEquals(Collections.emptyList(), result);
     }
 
@@ -219,12 +211,12 @@ class ItemServiceImplTest {
                 .when(mockItemRepository.save(item))
                 .thenReturn(item);
 
-        ItemDto result = itemService.update(1L, itemDto,1L);
+        ItemDto result = itemService.update(1L, itemDto, 1L);
         Assertions.assertEquals(itemDto, result);
     }
 
     @Test
-    void addComment() {
+    void addComment_whenInvoked_thenReturnSavedComment() {
         ArgumentCaptor<Comment> argumentCaptor = ArgumentCaptor.forClass(Comment.class);
 
         Mockito
@@ -242,5 +234,22 @@ class ItemServiceImplTest {
 
         ResponseCommentDto result = itemService.addComment(1L, requestCommentDto, 1L);
         Assertions.assertEquals(responseCommentDto, result);
+    }
+
+    @Test
+    void addComment_whenInvokedNotValid_thenReturnUserNotBookerOrBookingNotFinishedException() {
+        Mockito
+                .when(mockItemRepository.findById(1L))
+                .thenReturn(Optional.of(item));
+        Mockito
+                .when(mockUserRepository.findById(1L))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(mockBookingRepository.checkIsBookerAndFinished(1L, 1L))
+                .thenReturn(false);
+
+        Assertions.assertThrows(UserNotBookerOrBookingNotFinishedException.class,
+                () -> itemService.addComment(1L, requestCommentDto, 1L));
+
     }
 }

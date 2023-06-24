@@ -12,17 +12,11 @@ import ru.practicum.shareit.exception.*;
 @Slf4j
 public class ErrorHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class,
+            ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistException(final EntityAlreadyExistException e) {
-        log.warn("Получен статус 409 Conflict: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
@@ -56,14 +50,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidDateTimeException(final InvalidDateTimeException e) {
-        log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserNotBookerOrBookingNotFinished(final UserNotBookerOrBookingNotFinished e) {
+    public ErrorResponse handleUserNotBookerOrBookingNotFinished(final UserNotBookerOrBookingNotFinishedException e) {
         log.warn("Получен статус 400 Bad request: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
@@ -73,5 +60,17 @@ public class ErrorHandler {
     public ErrorResponse handleThrowable(final Throwable e) {
         log.warn("Получен статус 500 Internal server error: {}", e.getMessage(), e);
         return new ErrorResponse("Произошла непредвиденная ошибка.");
+    }
+
+    public static class ErrorResponse {
+        private final String error;
+
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() {
+            return error;
+        }
     }
 }

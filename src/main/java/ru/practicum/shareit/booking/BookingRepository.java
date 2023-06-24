@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,38 +9,6 @@ import ru.practicum.shareit.booking.entity.Booking;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-
-    List<Booking> findByBookerId(Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = :userId and (CURRENT_TIMESTAMP between b.start and b.end)")
-    List<Booking> findCurrentBookingByUserId(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = :userId and CURRENT_TIMESTAMP > b.end")
-    List<Booking> findPastBookingByUserId(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = :userId and CURRENT_TIMESTAMP < b.start")
-    List<Booking> findFutureBookingByUserId(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = :userId and b.status = 'WAITING'")
-    List<Booking> findWaitingBookingByUserId(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.booker br " +
-            "where br.id = :userId and b.status = 'REJECTED'")
-    List<Booking> findRejectedBookingByUserId(@Param("userId") Long userId, Sort sort);
 
     List<Booking> findByBookerId(Long userId, Pageable pageable);
 
@@ -74,42 +41,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "join b.booker br " +
             "where br.id = :userId and b.status = 'REJECTED'")
     List<Booking> findRejectedBookingByUserId(@Param("userId") Long userId, Pageable pageable);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId")
-    List<Booking> findAllBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId and (CURRENT_TIMESTAMP between b.start and b.end)")
-    List<Booking> findCurrentBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId and CURRENT_TIMESTAMP > b.end")
-    List<Booking> findPastBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId and CURRENT_TIMESTAMP < b.start")
-    List<Booking> findFutureBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId and b.status = 'WAITING'")
-    List<Booking> findWaitingBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
-
-    @Query("select b " +
-            "from Booking b " +
-            "join b.item i " +
-            "where i.owner.id = :userId and b.status = 'REJECTED'")
-    List<Booking> findRejectedBookingByOwnerItems(@Param("userId") Long userId, Sort sort);
 
     @Query("select b " +
             "from Booking b " +

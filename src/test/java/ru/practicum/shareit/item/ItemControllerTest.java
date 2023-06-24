@@ -77,7 +77,7 @@ class ItemControllerTest {
 
     @Test
     void findAllOwnerItems() throws Exception {
-        when(itemService.findAllOwnerItems(1L, null, null))
+        when(itemService.findAllOwnerItems(1L, 0, 10))
                 .thenReturn(List.of(responseItemDto));
 
         mvc.perform(get("/items")
@@ -106,7 +106,7 @@ class ItemControllerTest {
 
     @Test
     void findByText() throws Exception {
-        when(itemService.findByText("Рюкзак", null, null))
+        when(itemService.findByText("Рюкзак", 0, 10))
                 .thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items/search?text=Рюкзак"))

@@ -6,15 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.dto.ItemDto;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
     private final UserRepository mockRepository = Mockito.mock(UserRepository.class);

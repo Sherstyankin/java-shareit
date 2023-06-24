@@ -11,15 +11,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByOwnerIdOrderByIdAsc(Long userId);
-
     List<Item> findByOwnerIdOrderByIdAsc(Long userId, Pageable pageable);
-
-    @Query(value = "select * " +
-            "from items as i " +
-            "where (i.item_name ilike %:text% or i.description ilike %:text%) " +
-            "and i.available = true", nativeQuery = true)
-    List<Item> findByText(@Param("text") String text);
 
     @Query(value = "select * " +
             "from items as i " +

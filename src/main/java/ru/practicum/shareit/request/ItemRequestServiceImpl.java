@@ -3,7 +3,6 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -58,15 +57,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestResponseDto> findAllRequests(Long userId, Integer from, Integer size) {
         checkIsUserExists(userId);
-        List<ItemRequest> requests;
-        if (from == null || size == null) {
-            requests = itemRequestRepository
-                    .findAllByRequestorIdNotOrderByCreatedDesc(userId);
-        } else {
-            Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
-            requests = itemRequestRepository
-                    .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).getContent();
-        }
+        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        List<ItemRequest> requests = itemRequestRepository
+                .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).getContent();
         return attachItemsToRequestAndMapToDto(requests);
     }
 

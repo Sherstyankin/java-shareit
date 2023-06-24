@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -17,13 +16,13 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemForItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
-import ru.practicum.shareit.user.*;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.springframework.data.domain.Sort.Direction.ASC;
@@ -129,24 +128,7 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
-    void findAllRequestsWithoutPagination() {
-        Mockito
-                .when(mockUserRepository.existsById(user.getId()))
-                .thenReturn(true);
-        Mockito
-                .when(mockItemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(user.getId()))
-                .thenReturn(List.of(itemRequest));
-        Mockito
-                .when(mockItemRepository
-                        .findByItemRequestIn(List.of(itemRequest), Sort.by(ASC, "id")))
-                .thenReturn(List.of(item));
-
-        List<ItemRequestResponseDto> result = itemRequestService.findAllRequests(1L, null,null);
-        Assertions.assertEquals(List.of(itemRequestResponseDto), result);
-    }
-
-    @Test
-    void findAllRequestsWithPagination() {
+    void findAllRequests() {
         Page<ItemRequest> page = new PageImpl<>(List.of(itemRequest));
 
         Mockito
@@ -161,7 +143,7 @@ class ItemRequestServiceImplTest {
                         .findByItemRequestIn(List.of(itemRequest), Sort.by(ASC, "id")))
                 .thenReturn(List.of(item));
 
-        List<ItemRequestResponseDto> result = itemRequestService.findAllRequests(1L, 0,1);
+        List<ItemRequestResponseDto> result = itemRequestService.findAllRequests(1L, 0, 1);
         Assertions.assertEquals(List.of(itemRequestResponseDto), result);
 
     }
@@ -177,7 +159,7 @@ class ItemRequestServiceImplTest {
         Mockito
                 .when(mockItemRepository.findByItemRequest(itemRequest, Sort.by(ASC, "id")))
                 .thenReturn(List.of(item));
-        ItemRequestResponseDto result = itemRequestService.findRequestById(1L,1L);
+        ItemRequestResponseDto result = itemRequestService.findRequestById(1L, 1L);
         Assertions.assertEquals(itemRequestResponseDto, result);
     }
 
@@ -190,6 +172,6 @@ class ItemRequestServiceImplTest {
                 .when(mockItemRequestRepository.findById(1L))
                 .thenReturn(Optional.empty());
         Assertions.assertThrows(EntityNotFoundException.class, () -> itemRequestService
-                .findRequestById(1L,1L));
+                .findRequestById(1L, 1L));
     }
 }

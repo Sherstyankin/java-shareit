@@ -24,8 +24,8 @@ public class ItemController {
 
     @GetMapping
     public List<ResponseItemDto> findAllOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                   @RequestParam(required = false) @Min(0) Integer from,
-                                                   @RequestParam(required = false) @Min(1) Integer size) {
+                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск всех вещей пользователя(владельца) с ID:{}", userId);
         return itemService.findAllOwnerItems(userId, from, size);
     }
@@ -39,8 +39,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> findByText(@RequestParam String text,
-                                    @RequestParam(required = false) @Min(0) Integer from,
-                                    @RequestParam(required = false) @Min(1) Integer size) {
+                                    @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                    @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         log.info("Получен запрос на поиск вещи по тексту '{}'", text);
         return itemService.findByText(text, from, size);
     }

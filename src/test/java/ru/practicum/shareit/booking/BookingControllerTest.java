@@ -66,15 +66,15 @@ class BookingControllerTest {
                 .build();
 
         bookingDto = BookingDto.builder()
-                .start(LocalDateTime.of(2023, 6, 29, 12, 23,23))
-                .end(LocalDateTime.of(2023, 6, 30, 12, 23,23))
+                .start(LocalDateTime.of(2023, 6, 29, 12, 23, 23))
+                .end(LocalDateTime.of(2023, 6, 30, 12, 23, 23))
                 .itemId(1L)
                 .build();
 
         responseBookingDto = ResponseBookingDto.builder()
                 .id(1L)
-                .start(LocalDateTime.of(2023, 6, 29, 12, 23,23))
-                .end(LocalDateTime.of(2023, 6, 30, 12, 23,23))
+                .start(LocalDateTime.of(2023, 6, 29, 12, 23, 23))
+                .end(LocalDateTime.of(2023, 6, 30, 12, 23, 23))
                 .item(itemDto)
                 .booker(userDto)
                 .status(BookingStatus.WAITING)
@@ -148,7 +148,7 @@ class BookingControllerTest {
 
     @Test
     void findAllBookingByUserId() throws Exception {
-        when(bookingService.findAllBookingByUserId(1L, BookingState.ALL, null, null))
+        when(bookingService.findAllBookingByUserId(1L, BookingState.ALL, 0, 10))
                 .thenReturn(List.of(responseBookingDto));
 
         mvc.perform(get("/bookings")
@@ -168,7 +168,7 @@ class BookingControllerTest {
 
     @Test
     void findAllBookingByOwnerItems() throws Exception {
-        when(bookingService.findAllBookingByOwnerItems(1L, BookingState.ALL, null, null))
+        when(bookingService.findAllBookingByOwnerItems(1L, BookingState.ALL, 0, 10))
                 .thenReturn(List.of(responseBookingDto));
 
         mvc.perform(get("/bookings/owner")

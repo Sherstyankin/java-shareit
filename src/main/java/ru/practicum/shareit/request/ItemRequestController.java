@@ -22,7 +22,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestResponseDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                @RequestBody @Valid ItemRequestDto itemRequestDto) {
+                                         @RequestBody @Valid ItemRequestDto itemRequestDto) {
         log.info("Создать запрос на добавление вещи с описанием '{}' от пользователя с ID:{}",
                 itemRequestDto.getDescription(),
                 userId);
@@ -38,8 +38,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestResponseDto> findAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                        @RequestParam(required = false) @Min(0) Integer from,
-                                                        @RequestParam(required = false) @Min(1) Integer size) {
+                                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                        @RequestParam(defaultValue = "10") @Min(1) Integer size) {
         log.info("Поиск всех запросов на добавление вещей");
         return itemRequestService.findAllRequests(userId, from, size);
     }
