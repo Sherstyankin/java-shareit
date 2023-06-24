@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,12 @@ class ItemRequestRepositoryTest {
                 .description("Нужна пила")
                 .requestor(user2)
                 .build());
+    }
+
+    @AfterEach
+    void clearRepos() {
+        userRepository.deleteAll();
+        itemRequestRepository.deleteAll();
     }
 
     @Test
