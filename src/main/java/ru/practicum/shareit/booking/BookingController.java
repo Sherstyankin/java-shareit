@@ -12,7 +12,8 @@ import ru.practicum.shareit.handler.ErrorHandler;
 import ru.practicum.shareit.validation.ValidationService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -56,8 +57,8 @@ public class BookingController {
     public List<ResponseBookingDto> findAllBookingByUserId(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                            @RequestParam(defaultValue = "ALL")
                                                            BookingState state,
-                                                           @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                           @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+                                                           @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                           @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск бронирований пользователя с ID:{} по категории {}",
                 userId,
                 state);
@@ -68,8 +69,8 @@ public class BookingController {
     public List<ResponseBookingDto> findAllBookingByOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                                @RequestParam(defaultValue = "ALL")
                                                                BookingState state,
-                                                               @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                               @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+                                                               @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                               @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск бронирований всех вещей владельца с ID:{} по категории {}",
                 userId,
                 state);

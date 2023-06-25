@@ -10,7 +10,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -24,8 +25,8 @@ public class ItemController {
 
     @GetMapping
     public List<ResponseItemDto> findAllOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                   @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск всех вещей пользователя(владельца) с ID:{}", userId);
         return itemService.findAllOwnerItems(userId, from, size);
     }
@@ -39,8 +40,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> findByText(@RequestParam String text,
-                                    @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                    @RequestParam(defaultValue = "10") @Min(1) Integer size) {
+                                    @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                    @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск вещи по тексту '{}'", text);
         return itemService.findByText(text, from, size);
     }

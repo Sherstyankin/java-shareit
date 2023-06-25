@@ -3,15 +3,16 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemForItemRequestDto;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestResponseDto;
 import ru.practicum.shareit.user.User;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -47,6 +49,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemRequestResponseDto> findAllRequestsByRequestor(Long requestorId) {
         checkIsUserExists(requestorId);
         List<ItemRequest> requests = itemRequestRepository
@@ -55,15 +58,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemRequestResponseDto> findAllRequests(Long userId, Integer from, Integer size) {
         checkIsUserExists(userId);
-        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        Pageable pageable = CustomPageRequest.of(from, size);
         List<ItemRequest> requests = itemRequestRepository
                 .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).getContent();
         return attachItemsToRequestAndMapToDto(requests);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemRequestResponseDto findRequestById(Long userId, Long requestId) {
         checkIsUserExists(userId);
         ItemRequest request = itemRequestRepository.findById(requestId)

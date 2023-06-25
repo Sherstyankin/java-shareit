@@ -2,10 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
 import ru.practicum.shareit.booking.entity.Booking;
@@ -15,6 +15,7 @@ import ru.practicum.shareit.exception.ReceivedStatusAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotOwnerOrBookerException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -33,7 +35,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    private static final Sort sort = Sort.by(DESC, "start");
+    private static final Sort SORT = Sort.by(DESC, "start");
 
     @Override
     public ResponseBookingDto create(Long userId, BookingDto bookingDto) {
@@ -60,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseBookingDto findBookingInfo(Long userId, Long bookingId) {
         Booking booking = findBooking(bookingId);
         checkIsOwnerOrBooker(userId,
@@ -69,6 +72,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResponseBookingDto> findAllBookingByUserId(Long userId, BookingState state, Integer from,
                                                            Integer size) {
         checkIsUserExists(userId); // проверить существует ли пользователь
@@ -78,6 +82,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResponseBookingDto> findAllBookingByOwnerItems(Long userId, BookingState state, Integer from,
                                                                Integer size) {
         checkIsUserExists(userId); // проверить существует ли пользователь
@@ -88,7 +93,7 @@ public class BookingServiceImpl implements BookingService {
 
     private List<Booking> findAllBookingByUserIdByState(Long userId, BookingState state, Integer from,
                                                         Integer size) {
-        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, sort);
+        Pageable pageable = CustomPageRequest.of(from, size, SORT);
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
@@ -117,7 +122,7 @@ public class BookingServiceImpl implements BookingService {
                                                             Integer from,
                                                             Integer size) {
         List<Booking> bookingList;
-        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size, sort);
+        Pageable pageable = CustomPageRequest.of(from, size, SORT);
         switch (state) {
             case CURRENT:
                 bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId, pageable);

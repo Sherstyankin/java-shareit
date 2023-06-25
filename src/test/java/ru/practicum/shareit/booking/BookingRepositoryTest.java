@@ -106,6 +106,12 @@ class BookingRepositoryTest {
 
         assertEquals(3, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -114,6 +120,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.APPROVED, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -122,6 +134,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 21, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.REJECTED, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -130,6 +148,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -138,6 +162,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -146,6 +176,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 21, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.REJECTED, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -154,6 +190,12 @@ class BookingRepositoryTest {
 
         assertEquals(3, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -162,6 +204,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.APPROVED, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -170,6 +218,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 21, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.REJECTED, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -178,6 +232,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -186,6 +246,12 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
@@ -194,38 +260,64 @@ class BookingRepositoryTest {
 
         assertEquals(1, bookingList.size());
         assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
+        assertEquals(LocalDateTime.of(2023, 6, 21, 12, 23),
+                bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.REJECTED, bookingList.get(0).getStatus());
     }
 
     @Test
     void findLastBookingForItem_whenInvoked_then_ResponseContainsListWithBooking() {
         List<Booking> bookingList = bookingRepository.findLastBookingForItem(user.getId());
 
+        assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
         assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
                 bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.APPROVED, bookingList.get(0).getStatus());
     }
 
     @Test
     void findNextBookingForItem_whenInvoked_then_ResponseContainsListWithBooking() {
         List<Booking> bookingList = bookingRepository.findNextBookingForItem(user.getId());
 
+        assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
         assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
                 bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test
     void findLastBookingForAllOwnerItems_whenInvoked_then_ResponseContainsListWithBooking() {
         List<Booking> bookingList = bookingRepository.findLastBookingForItem(user.getId());
 
+        assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
         assertEquals(LocalDateTime.of(2023, 6, 23, 12, 23),
                 bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.APPROVED, bookingList.get(0).getStatus());
     }
 
     @Test
     void findNextBookingForAllOwnerItems_whenInvoked_then_ResponseContainsListWithBooking() {
         List<Booking> bookingList = bookingRepository.findNextBookingForItem(user.getId());
 
+        assertEquals("Походный рюкзак", bookingList.get(0).getItem().getDescription());
+        assertEquals("Сергей", bookingList.get(0).getBooker().getName());
         assertEquals(LocalDateTime.of(2023, 6, 29, 12, 23),
                 bookingList.get(0).getStart());
+        assertEquals(LocalDateTime.of(2023, 6, 30, 12, 23),
+                bookingList.get(0).getEnd());
+        assertEquals(BookingStatus.WAITING, bookingList.get(0).getStatus());
     }
 
     @Test

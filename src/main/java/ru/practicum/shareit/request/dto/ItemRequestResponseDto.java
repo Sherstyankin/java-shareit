@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.practicum.shareit.configuration.ApplicationConfig.TIME_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class ItemRequestResponseDto {
 
     private String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime created;
 
     @Builder.Default

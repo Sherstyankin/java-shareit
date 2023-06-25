@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingForItemDto;
@@ -17,6 +18,7 @@ import ru.practicum.shareit.exception.UserNotOwnerOrBookerException;
 import ru.practicum.shareit.item.comment.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -49,8 +52,9 @@ public class ItemServiceImpl implements ItemService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResponseItemDto> findAllOwnerItems(Long userId, Integer from, Integer size) {
-        Pageable pageable = PageRequest.of(from > 0 ? from / size : 0, size);
+        Pageable pageable = CustomPageRequest.of(from, size);
         List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
         if (!items.isEmpty()) {
             checkOwner(userId, items.get(0).getOwner().getId());
@@ -91,6 +95,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseItemDto findById(Long userId, Long itemId) {
         Item item = findItem(itemId);
         log.info("Получаем вещь с ID:{}", itemId);
@@ -112,6 +117,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemDto> findByText(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             log.info("Возвращаем пустой список, так как текст запроса не указан.");
@@ -156,6 +162,7 @@ public class ItemServiceImpl implements ItemService {
         return modelMapper.map(itemRepository.save(itemToUpdate), ItemDto.class);
     }
 
+    @Override
     public ResponseCommentDto addComment(Long userId, RequestCommentDto commentDto, Long itemId) {
         Comment comment = modelMapper.map(commentDto, Comment.class);
         // проверить то, что пользователь брал вещь в аренду и аренда завершена

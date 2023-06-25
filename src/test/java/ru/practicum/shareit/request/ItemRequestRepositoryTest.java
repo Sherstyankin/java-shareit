@@ -53,6 +53,7 @@ class ItemRequestRepositoryTest {
 
         assertEquals(1, itemRequestList.size());
         assertEquals("Нужна палатка", itemRequestList.get(0).getDescription());
+        assertEquals("Сергей", itemRequestList.get(0).getRequestor().getName());
     }
 
     @Test
@@ -63,5 +64,6 @@ class ItemRequestRepositoryTest {
 
         assertEquals(1, itemRequestList.size());
         assertEquals("Нужна пила", itemRequestList.get(0).getDescription());
+        assertEquals("Олег", itemRequestList.get(0).getRequestor().getName());
     }
 }

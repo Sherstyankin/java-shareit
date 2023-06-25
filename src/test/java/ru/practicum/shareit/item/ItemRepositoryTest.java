@@ -61,8 +61,7 @@ class ItemRepositoryTest {
         Pageable pageable = PageRequest.of(0, 5);
         List<Item> itemList = itemRepository.findByOwnerIdOrderByIdAsc(owner.getId(), pageable);
 
-        assertEquals(1, itemList.size());
-        assertEquals("Походный рюкзак", itemList.get(0).getDescription());
+        initSetOfAsserts(itemList);
     }
 
     @Test
@@ -70,8 +69,7 @@ class ItemRepositoryTest {
         Pageable pageable = PageRequest.of(0, 5);
         List<Item> itemList = itemRepository.findByText("РюК", pageable);
 
-        assertEquals(1, itemList.size());
-        assertEquals("Походный рюкзак", itemList.get(0).getDescription());
+        initSetOfAsserts(itemList);
     }
 
     @Test
@@ -79,8 +77,7 @@ class ItemRepositoryTest {
         Sort sort = Sort.by(ASC, "id");
         List<Item> itemList = itemRepository.findByItemRequestIn(List.of(itemRequest), sort);
 
-        assertEquals(1, itemList.size());
-        assertEquals("Походный рюкзак", itemList.get(0).getDescription());
+        initSetOfAsserts(itemList);
     }
 
     @Test
@@ -88,7 +85,15 @@ class ItemRepositoryTest {
         Sort sort = Sort.by(ASC, "id");
         List<Item> itemList = itemRepository.findByItemRequest(itemRequest, sort);
 
+        initSetOfAsserts(itemList);
+    }
+
+    private void initSetOfAsserts(List<Item> itemList) {
         assertEquals(1, itemList.size());
         assertEquals("Походный рюкзак", itemList.get(0).getDescription());
+        assertEquals("Рюкзак", itemList.get(0).getName());
+        assertEquals("Сергей", itemList.get(0).getOwner().getName());
+        assertEquals("Нужен рюкзак", itemList.get(0).getItemRequest().getDescription());
+        assertEquals(true, itemList.get(0).getAvailable());
     }
 }

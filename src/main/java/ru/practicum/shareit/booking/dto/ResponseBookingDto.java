@@ -11,6 +11,8 @@ import ru.practicum.shareit.user.UserDto;
 
 import java.time.LocalDateTime;
 
+import static ru.practicum.shareit.configuration.ApplicationConfig.TIME_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,10 +21,10 @@ public class ResponseBookingDto {
 
     private Long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime start;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(pattern = TIME_FORMAT)
     private LocalDateTime end;
 
     private ItemDto item;
