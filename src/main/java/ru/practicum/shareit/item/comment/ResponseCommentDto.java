@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.comment;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,6 @@ public class ResponseCommentDto {
 
     private String authorName;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime created;
 }

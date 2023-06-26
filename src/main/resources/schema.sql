@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS items (
         description varchar(200) NOT NULL,
         available boolean NOT NULL,
         user_id BIGINT NOT NULL,
+        request_id BIGINT,
         CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -33,4 +34,12 @@ CREATE TABLE IF NOT EXISTS comments (
         created_time timestamp WITHOUT TIME ZONE NOT NULL,
         CONSTRAINT fk_comments_to_items FOREIGN KEY(item_id) REFERENCES items(id),
         CONSTRAINT fk_comments_to_users FOREIGN KEY(author_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS requests (
+        id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY NOT NULL,
+        description varchar(255) NOT NULL,
+        requestor_id BIGINT NOT NULL,
+        created timestamp WITHOUT TIME ZONE NOT NULL,
+        CONSTRAINT fk_requests_to_users FOREIGN KEY(requestor_id) REFERENCES users(id)
 );

@@ -2,8 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
 import ru.practicum.shareit.booking.entity.Booking;
@@ -13,6 +15,7 @@ import ru.practicum.shareit.exception.ReceivedStatusAlreadyExistsException;
 import ru.practicum.shareit.exception.UserNotOwnerOrBookerException;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -22,6 +25,7 @@ import java.util.Objects;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -31,7 +35,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
-    private static final Sort sort = Sort.by(DESC, "start");
+    private static final Sort SORT = Sort.by(DESC, "start");
 
     @Override
     public ResponseBookingDto create(Long userId, BookingDto bookingDto) {
@@ -58,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseBookingDto findBookingInfo(Long userId, Long bookingId) {
         Booking booking = findBooking(bookingId);
         checkIsOwnerOrBooker(userId,
@@ -67,59 +72,78 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<ResponseBookingDto> findAllBookingByUserId(Long userId, BookingState state) {
+    @Transactional(readOnly = true)
+    public List<ResponseBookingDto> findAllBookingByUserId(Long userId, BookingState state, Integer from,
+                                                           Integer size) {
         checkIsUserExists(userId); // проверить существует ли пользователь
-        List<Booking> bookingList;
-        switch (state) {
-            case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingByUserId(userId, sort);
-                break;
-            case PAST:
-                bookingList = bookingRepository.findPastBookingByUserId(userId, sort);
-                break;
-            case FUTURE:
-                bookingList = bookingRepository.findFutureBookingByUserId(userId, sort);
-                break;
-            case WAITING:
-                bookingList = bookingRepository.findWaitingBookingByUserId(userId, sort);
-                break;
-            case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingByUserId(userId, sort);
-                break;
-            default:
-                bookingList = bookingRepository.findByBookerIdOrderByStartDesc(userId);
-                break;
-        }
+        List<Booking> bookingList = findAllBookingByUserIdByState(userId, state, from, size);
         return bookingList != null ?
                 BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
     }
 
     @Override
-    public List<ResponseBookingDto> findAllBookingByOwnerItems(Long userId, BookingState state) {
+    @Transactional(readOnly = true)
+    public List<ResponseBookingDto> findAllBookingByOwnerItems(Long userId, BookingState state, Integer from,
+                                                               Integer size) {
         checkIsUserExists(userId); // проверить существует ли пользователь
+        List<Booking> bookingList = findAllBookingByOwnerItemsByState(userId, state, from, size);
+        return bookingList != null ?
+                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+    }
+
+    private List<Booking> findAllBookingByUserIdByState(Long userId, BookingState state, Integer from,
+                                                        Integer size) {
+        Pageable pageable = CustomPageRequest.of(from, size, SORT);
         List<Booking> bookingList;
         switch (state) {
             case CURRENT:
-                bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findCurrentBookingByUserId(userId, pageable);
                 break;
             case PAST:
-                bookingList = bookingRepository.findPastBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findPastBookingByUserId(userId, pageable);
                 break;
             case FUTURE:
-                bookingList = bookingRepository.findFutureBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findFutureBookingByUserId(userId, pageable);
                 break;
             case WAITING:
-                bookingList = bookingRepository.findWaitingBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findWaitingBookingByUserId(userId, pageable);
                 break;
             case REJECTED:
-                bookingList = bookingRepository.findRejectedBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findRejectedBookingByUserId(userId, pageable);
                 break;
             default:
-                bookingList = bookingRepository.findAllBookingByOwnerItems(userId, sort);
+                bookingList = bookingRepository.findByBookerId(userId, pageable);
                 break;
         }
-        return bookingList != null ?
-                BookingMapper.mapToResponseBookingDto(bookingList) : Collections.emptyList();
+        return bookingList;
+    }
+
+    private List<Booking> findAllBookingByOwnerItemsByState(Long userId, BookingState state,
+                                                            Integer from,
+                                                            Integer size) {
+        List<Booking> bookingList;
+        Pageable pageable = CustomPageRequest.of(from, size, SORT);
+        switch (state) {
+            case CURRENT:
+                bookingList = bookingRepository.findCurrentBookingByOwnerItems(userId, pageable);
+                break;
+            case PAST:
+                bookingList = bookingRepository.findPastBookingByOwnerItems(userId, pageable);
+                break;
+            case FUTURE:
+                bookingList = bookingRepository.findFutureBookingByOwnerItems(userId, pageable);
+                break;
+            case WAITING:
+                bookingList = bookingRepository.findWaitingBookingByOwnerItems(userId, pageable);
+                break;
+            case REJECTED:
+                bookingList = bookingRepository.findRejectedBookingByOwnerItems(userId, pageable);
+                break;
+            default:
+                bookingList = bookingRepository.findAllBookingByOwnerItems(userId, pageable);
+                break;
+        }
+        return bookingList;
     }
 
     private void checkIsOwnerOrBooker(Long userId, Long ownerId, Long bookerId) {

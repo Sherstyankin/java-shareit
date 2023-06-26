@@ -2,30 +2,33 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.RequestCommentDto;
 import ru.practicum.shareit.item.comment.ResponseCommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 public class ItemController {
+
     private final ItemService itemService;
-    private final ModelMapper modelMapper;
 
     @GetMapping
-    public List<ResponseItemDto> findAllOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ResponseItemDto> findAllOwnerItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск всех вещей пользователя(владельца) с ID:{}", userId);
-        return itemService.findAllOwnerItems(userId);
+        return itemService.findAllOwnerItems(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -36,31 +39,30 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> findByText(@RequestParam String text) {
+    public List<ItemDto> findByText(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                    @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск вещи по тексту '{}'", text);
-        return itemService.findByText(text).stream()
-                .map(item -> modelMapper.map(item, ItemDto.class))
-                .collect(Collectors.toList());
+        return itemService.findByText(text, from, size);
     }
 
     @PostMapping
     public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody @Valid ItemDto item) {
+                          @RequestBody @Valid ItemDto itemDto) {
         log.info("Получен запрос на добавление вещи с названием:'{}' от пользователя с ID:{}",
-                item.getName(),
+                itemDto.getName(),
                 userId);
-        return modelMapper.map(itemService.create(userId, modelMapper.map(item, Item.class)), ItemDto.class);
+        return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody ItemDto item,
+                          @RequestBody ItemDto itemDto,
                           @PathVariable Long itemId) {
         log.info("Получен запрос на редактирование вещи с ID:{} от пользователя с ID:{}",
                 itemId,
                 userId);
-        return modelMapper.map(itemService.update(userId, modelMapper.map(item, Item.class), itemId),
-                ItemDto.class);
+        return itemService.update(userId, itemDto, itemId);
     }
 
     @PostMapping("/{itemId}/comment")
@@ -70,7 +72,6 @@ public class ItemController {
         log.info("Получен запрос на добавление отзыва для вещи с ID:{} от пользователя с ID:{}",
                 itemId,
                 userId);
-        Comment comment = modelMapper.map(commentDto, Comment.class);
-        return itemService.addComment(userId, comment, itemId);
+        return itemService.addComment(userId, commentDto, itemId);
     }
 }
