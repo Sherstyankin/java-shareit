@@ -56,8 +56,7 @@ public class BookingController {
                                                          @RequestParam(name = "state", defaultValue = "all") String stateParam,
                                                          @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                          @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+        BookingState state = BookingState.from(stateParam);
         log.info("Получен запрос на поиск бронирований пользователя с ID:{} по категории {}",
                 userId,
                 state);
@@ -69,8 +68,7 @@ public class BookingController {
                                                              @RequestParam(name = "state", defaultValue = "all") String stateParam,
                                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
                                                              @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
-        BookingState state = BookingState.from(stateParam)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + stateParam));
+        BookingState state = BookingState.from(stateParam);
         log.info("Получен запрос на поиск бронирований всех вещей владельца с ID:{} по категории {}",
                 userId,
                 state);

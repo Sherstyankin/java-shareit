@@ -1,7 +1,5 @@
 package ru.practicum.shareit.booking.dto;
 
-import java.util.Optional;
-
 public enum BookingState {
     ALL, // все категории бронирования
     CURRENT, // текущее бронирование
@@ -10,12 +8,11 @@ public enum BookingState {
     WAITING, // новое бронирование, ожидает одобрения
     REJECTED; // бронирование отклонено владельцем
 
-    public static Optional<BookingState> from(String stringState) {
-        for (BookingState state : values()) {
-            if (state.name().equalsIgnoreCase(stringState)) {
-                return Optional.of(state);
-            }
+    public static BookingState from(String stringState) {
+        try {
+            return BookingState.valueOf(stringState.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + stringState);
         }
-        return Optional.empty();
     }
 }

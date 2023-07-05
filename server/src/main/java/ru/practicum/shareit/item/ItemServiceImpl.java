@@ -54,7 +54,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ResponseItemDto> findAllOwnerItems(Long userId, Integer from, Integer size) {
-        checkIsUserExists(userId);
         Pageable pageable = CustomPageRequest.of(from, size);
         List<Item> items = itemRepository.findByOwnerIdOrderByIdAsc(userId, pageable);
         if (!items.isEmpty()) {
@@ -121,7 +120,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> findByText(Long userId, String text, Integer from, Integer size) {
-        checkIsUserExists(userId);
         if (text.isBlank()) {
             log.info("Возвращаем пустой список, так как текст запроса не указан.");
             return Collections.emptyList();
@@ -136,7 +134,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
-        checkIsUserExists(userId);
         Item item = modelMapper.map(itemDto, Item.class);
         item.setOwner(findUser(userId));
         if (itemDto.getRequestId() != null) {
@@ -148,7 +145,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto update(Long userId, ItemDto itemDto, Long itemId) {
-        checkIsUserExists(userId);
         Item item = modelMapper.map(itemDto, Item.class);
         Item itemToUpdate = findItem(itemId);
         checkOwner(userId, itemToUpdate.getOwner().getId());
@@ -169,7 +165,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ResponseCommentDto addComment(Long userId, RequestCommentDto commentDto, Long itemId) {
-        checkIsUserExists(userId);
         Comment comment = modelMapper.map(commentDto, Comment.class);
         // проверить то, что пользователь брал вещь в аренду и аренда завершена
         Boolean isBookerAndFinished = bookingRepository.checkIsBookerAndFinished(userId, itemId);
